@@ -1,0 +1,21 @@
+{
+  "name": "noderak",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsup ./core"
+  },
+  "workspaces": [
+    "core/*"
+  ],
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.12.2",
+    "tsup": "^8.0.2",
+    "typescript": "^5.4.3"
+  }
+}

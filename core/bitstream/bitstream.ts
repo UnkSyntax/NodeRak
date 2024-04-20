@@ -251,33 +251,35 @@ export class BitStream {
         return this.data!;
     }
 
-    // PrintBits(): void {
-    //     if (this.numberOfBitsUsed <= 0) {
-    //         console.log("No bits");
-    //         return;
-    //     }
-    
-    //     for (let counter = 0; counter < BITS_TO_BYTES(this.numberOfBitsUsed); counter++) {
-    //         let stop: number;
-    
-    //         if (counter === (this.numberOfBitsUsed - 1) >> 3) {
-    //             stop = 8 - (((this.numberOfBitsUsed - 1) & 7) + 1);
-    //         } else {
-    //             stop = 0;
-    //         }
-    
-    //         for (let counter2 = 7; counter2 >= stop; counter2--) {
-    //             if ((this.data![counter] >> counter2) & 1) {
-    //                 console.log('1');
-    //             } else {
-    //                 console.log('0');
-    //             }
-    //         }
-    
-    //         console.log(' ');
-    //     }
-    
-    //     console.log();
-    // }
-    
+    resetReadPointer(): void {
+        this.readOffset = 0;
+    }
+
+    resetWritePointer(): void {
+        this.numberOfBitsUsed = 0;
+    }
+
+    readBit(): boolean {
+        return !!(this.data![this.readOffset >> 3] & (0x80 >> (this.readOffset++ & 7)));
+    }
+
+    alignWriteToByteBoundary(): void {
+        if (this.numberOfBitsUsed) {
+            this.numberOfBitsUsed += 8 - (((this.numberOfBitsUsed - 1) & 7) + 1);
+        }
+    }
+
+    alignReadToByteBoundary(): void {
+        if (this.readOffset) {
+            this.readOffset += 8 - (((this.readOffset - 1) & 7) + 1);
+        }
+    }
+
+    ignoreBits(numberOfBits: number): void {
+        this.readOffset += numberOfBits;
+    }
+
+    setWriteOffset(offset: number): void {
+        this.numberOfBitsUsed = offset;
+    }
 }

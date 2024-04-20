@@ -178,6 +178,7 @@ export class BitStream {
 
     readInt32() {
         const test = this.readBits(32, false);
+        console.log(test)
     }
 
     readBits(numberOfBitsToRead: number, alignBitsToRight: boolean) {
@@ -185,13 +186,12 @@ export class BitStream {
             return false;
         }
 
-        const readOffsetMod8 = this.readOffset & 8;
+        const readOffsetMod8 = this.readOffset & 7;
         let offset = 0;
         const output = Buffer.alloc(BITS_TO_BYTES(numberOfBitsToRead));
 
         while (numberOfBitsToRead > 0) {
             output[offset] |= this.data![this.readOffset >> 3] << readOffsetMod8
-            console.log(this.data![this.readOffset >> 3] << readOffsetMod8);
             if (readOffsetMod8 > 0 && numberOfBitsToRead > 8 - readOffsetMod8) {
                 output[offset] |= this.data![(this.readOffset >> 3) + 1] >> (8 - readOffsetMod8);
             }

@@ -79,15 +79,21 @@ export class BitStream {
     }
 
     writeInt16(value: number) {
-        this.writeBits(Buffer.from([value]), 16, true);
+        const buf = Buffer.alloc(2);
+        buf.writeUInt16LE(value, 0);
+        this.writeBits(buf, 16, true);
     }
 
     writeInt32(value: number) {
-        this.writeBits(Buffer.from([value]), 32, true);
+        const buf = Buffer.alloc(4);
+        buf.writeUInt32LE(value, 0);
+        this.writeBits(buf, 32, true);
     }
 
     writeFloat(value: number) {
-        this.writeBits(Buffer.from([value]), 32, true);
+        const buf = Buffer.alloc(4);
+        buf.writeFloatLE(value, 0);
+        this.writeBits(buf, 32, true);
     }
 
     writeBoolean(value: boolean) {
@@ -168,27 +174,29 @@ export class BitStream {
         }
     }
 
-    readInt8() {
-        const test = this.readBits(8, false);
+    readInt8(): number {
+        const buf = this.readBits(8, true);
+        return buf.readUint8(0);
     }
 
-    readInt16() {
-        const test = this.readBits(16, false);
+    readInt16(): number {
+        const buf = this.readBits(16, true);
+        return buf.readUint16LE(0);
     }
 
-    readInt32() {
-        const test = this.readBits(32, false);
-        console.log(test)
+    readInt32(): number {
+        const buf = this.readBits(32, true);
+        return buf.readUint32LE(0);
     }
 
-    readBits(numberOfBitsToRead: number, alignBitsToRight: boolean) {
+    readBits(numberOfBitsToRead: number, alignBitsToRight: boolean): Buffer {
+        const output = Buffer.alloc(BITS_TO_BYTES(numberOfBitsToRead));
         if (this.readOffset + numberOfBitsToRead > this.numberOfBitsUsed) {
-            return false;
+            return output;
         }
 
         const readOffsetMod8 = this.readOffset & 7;
         let offset = 0;
-        const output = Buffer.alloc(BITS_TO_BYTES(numberOfBitsToRead));
 
         while (numberOfBitsToRead > 0) {
             output[offset] |= this.data![this.readOffset >> 3] << readOffsetMod8
